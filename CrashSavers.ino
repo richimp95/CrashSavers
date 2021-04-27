@@ -3,6 +3,7 @@
 // References
 // For the Pressure sensor: https://makersportal.com/blog/2020/6/4/mps20n0040d-pressure-sensor-calibration-with-arduino
 // For the Bluetooth module: https://www.aranacorp.com/en/arduino-and-bluetooth-module-hc-06/
+// Driver https://electrocrea.com/blogs/tutoriales/como-instalar-driver-ch340-para-arduinos-genericos
 
 // Libraries
 #include <SoftwareSerial.h>
@@ -12,18 +13,21 @@
 
 // Bluetooth
 int RX = 2; //Arduino new RX
-int TX = 3; //Arduino new TX
+int TX = 1; //Arduino new TX
 
 // Sensor pins to use
-int out_sen_1 = A0; //Sensor 1
-int sdk_sen_1 = 4; //SDK from Sensor 1
-int out_sen_2 = A1; //Sensor 2
-int sdk_sen_2 = 5; //SDK from Sensor 1
+const byte out_sen_1 = 4; //Sensor 1
+const byte sdk_sen_1 = 3; //SDK from Sensor 1
+const byte out_sen_2 = 6; //Sensor 2
+const byte sdk_sen_2 = 5; //SDK from Sensor 1
+
+Q2HX711 sen_1(out_sen_1, sdk_sen_1); 
+Q2HX711 sen_2(out_sen_2, sdk_sen_2); 
 
 // LED´s
-int led_r = 6; //Red LED
-int led_g = 7; //Green LED
-int led_b = 8; //Blue LED
+int led_r = 7; //Red LED
+int led_g = 8; //Green LED
+int led_b = 9; //Blue LED
 
 // This defines where the HC-06 (Bluetooth Module) is going to be connected.
 // In this case in pins 2 and 3
@@ -31,7 +35,7 @@ SoftwareSerial hc06(RX,TX);
 
 // Variables
 float diff_sen = 0; // Sensors pressure difference 
-float diff_val = 20; // Predefined value for pressure difference wanted
+float diff_val = 13332; // Predefined value for pressure difference wanted 100 mm Hg
 
 
 void setup() {
@@ -69,9 +73,10 @@ float get_diff (float press_diff) {
 
     // Space to get the sensors values
     
-    float a = analogRead(out_sen_1); //get analog read from sensor 1
-    float b = analogRead(out_sen_2); //get analog read from sensor 2
-    
+    float a = sen_1.read(); //get analog read from sensor 1
+    delay(50);
+    float b = sen_2.read(); //get analog read from sensor 2
+    delay(50);    
     // --------------------------------
     
     float diff = a - b; // Difference between sensor 1 and sensor 2
