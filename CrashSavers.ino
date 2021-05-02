@@ -35,7 +35,7 @@ SoftwareSerial hc06(RX,TX);
 
 // Variables
 float diff_sen = 0; // Sensors pressure difference 
-float diff_val = 13332; // Predefined value for pressure difference wanted 100 mm Hg
+float diff_val = 30; // Predefined value for pressure difference wanted 100 mm Hg
 
 
 void setup() {
@@ -51,22 +51,8 @@ void setup() {
 
 void loop() {
   
-    float a = sen_1.read(); //get analog read from sensor 1
-    //float vr_a = (a*5.0)/(128.0*pow(2,24.0)-1.0);
-    float p_a = map(a,8388608, 16777215, 0, 40);//(29.5/50)*(vr_a-22.6);
-    Serial.print("Sensor 1: ");
-    Serial.print(p_a,4);
-    Serial.println("kPa");
-    delay(1000);
-    float b = sen_2.read(); //get analog read from sensor 2
-    //float vr_b = (b*5.0)/(128.0*pow(2,24.0)-1.0);
-    float p_b = map(b,8388608, 16777215, 0, 40);//(29.5/50)*(vr_b-22.6);
-    Serial.print("Sensor 2: ");
-    Serial.print(p_b, 4);
-    Serial.println("kPa");
-    delay(1000);    
     // ----------
-//  diff_sen = get_diff(diff_val); // Get pressure difference
+  diff_sen = get_diff(diff_val); // Get pressure difference
 //  
 //  while(hc06.available()>0){
 //    send_diff(diff_sen); //Send both sensor data to the app
@@ -76,26 +62,26 @@ void loop() {
 
 //Send the pressure value to the app via bluetooth  
 void send_diff(float a) {
-  
     // Here is a space to modify the result depending on the app developer’s requirements.
-    
     hc06.print(a);
-    delay(100);
-
-  }
+}
 
 // Function to read sensor pins and get the pressure difference
 float get_diff (float press_diff) {
 
-    // Space to get the sensors values
-    
     float a = sen_1.read(); //get analog read from sensor 1
-    Serial.println(a);
+    float p_a = map(a,8388608, 16777215, 0, 40);//map de sensor read to kPa
+    Serial.print("Sensor 1: ");
+    Serial.print(p_a,4);
+    Serial.println("kPa");
     delay(50);
+    
     float b = sen_2.read(); //get analog read from sensor 2
-    Serial.println(b);
+    float p_b = map(b,8388608, 16777215, 0, 40);//map de sensor read to kPa
+    Serial.print("Sensor 2: ");
+    Serial.print(p_b, 4);
+    Serial.println("kPa");
     delay(50);    
-    // --------------------------------
     
     float diff = a - b; // Difference between sensor 1 and sensor 2
 
