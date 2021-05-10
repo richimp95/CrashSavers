@@ -53,6 +53,8 @@ void loop() {
   
     // ----------
   diff_sen = get_diff(diff_val); // Get pressure difference
+  Serial.print(diff_sen);
+  Serial.println("mmHg");
 //  
 //  while(hc06.available()>0){
 //    send_diff(diff_sen); //Send both sensor data to the app
@@ -70,20 +72,20 @@ void send_diff(float a) {
 float get_diff (float press_diff) {
 
     float a = sen_1.read(); //get analog read from sensor 1
-    float p_a = map(a,8388608, 16777215, 0, 40);//map de sensor read to kPa
-    Serial.print("Sensor 1: ");
-    Serial.print(p_a,4);
-    Serial.println("kPa");
-    delay(50);
+    float p_a = map(a,8388608, 16777215, 0, 40)*7.5;//map de sensor read to kPa
+    //Serial.print("Sensor 1: ");
+    //Serial.print(p_a,4);
+    //Serial.println("mmHg");
+    //delay(500);
     
     float b = sen_2.read(); //get analog read from sensor 2
-    float p_b = map(b,8388608, 16777215, 0, 40);//map de sensor read to kPa
-    Serial.print("Sensor 2: ");
-    Serial.print(p_b, 4);
-    Serial.println("kPa");
-    delay(50);    
+    float p_b = map(b,8388608, 16777215, 0, 40)*7.5;//map de sensor read to kPa
+    //Serial.print("Sensor 2: ");
+    //Serial.print(p_b, 4);
+    //Serial.println("mmHg");
+    delay(500);    
     
-    float diff = a - b; // Difference between sensor 1 and sensor 2
+    float diff = p_a - p_b; // Difference between sensor 1 and sensor 2
 
     // If the sensor diff is higher than the pressure we want, LED green is turn ON. Else it turns OFF.
     if (diff >= press_diff){
