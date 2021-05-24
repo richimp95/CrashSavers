@@ -1,5 +1,7 @@
-// The following code was developed by a joint venture between Desarrollos RM and Digital Strings
 
+
+// The following code was developed by a joint venture between Desarrollos RM and Digital Strings
+      
 // References
 // For the Pressure sensor: https://makersportal.com/blog/2020/6/4/mps20n0040d-pressure-sensor-calibration-with-arduino
 // For the Bluetooth module: https://www.aranacorp.com/en/arduino-and-bluetooth-module-hc-06/
@@ -8,7 +10,7 @@
 // Libraries
 #include <SoftwareSerial.h>
 #include <Q2HX711.h> // Search for Queuetue HX711 Library
-
+//#include <Keyboard.h>
 // Define PINs to be used
 
 // Bluetooth
@@ -43,7 +45,7 @@ SoftwareSerial hc05(RX,TX);
 
 // Variables
 float diff_sen = 0; // Sensors pressure difference 
-float diff_val = 90; // Predefined value for pressure difference wanted 90 mm Hg
+float diff_val = 110; // Predefined value for pressure difference wanted 110 mm Hg
 float base = 0; // Base value for pressure difference 
 int avg_size = 10;
 
@@ -57,93 +59,54 @@ void setup() {
   //Initialize Bluetooth Serial Port
   hc05.begin(9600);
   Serial.begin(9600);
-  
+  //Keyboard.begin();
   digitalWrite(relay, HIGH);
+  digitalWrite(led_g, LOW);
 }
 
 void loop() {
   
    if(init_method == true){
+    delay(5000); //Delay to stabilize preassure initial measure 
     base = init_measure();
     init_method = false;
    }
-   
-   //Serial.println("Base");
-   //Serial.println(base);
-   
    if (bandera == false){
     
     diff_sen = get_diff(diff_val); // Get pressure difference
-
-    if(diff_sen > 110){
+    if(diff_sen > diff_val){
          
       digitalWrite(relay, LOW);
+      hc05.write("TORNIQUETE LISTO\nEnviando caracter ... \nY\n");
       bandera = true; // If the pressure hits more than 110 mmHg the motor will turn off 
-      
+      digitalWrite(led_g, HIGH);
       }else{
-        
+        hc05.write("TORNIQUETE EN PROCESO\nPresion: ");
+        hc05.print(diff_sen);
+        hc05.write(" mmHg\n");
+        delay(500);
         digitalWrite(relay, HIGH);
         
         }  
     
    }
-//    // ----------
-//  
-//   Serial.print(diff_sen);
-//   Serial.println(" mmHg");
-
-//  diff_sen = 100.0; // Test 
-
-  if (hc05.available()){
-      BLUE = hc05.read();
-      Serial.write(BLUE);   
-  }
-  
-  LOCK_UNLOCK(diff_sen); 
-  
-  //while(hc06.available()>0){
-  //  send_diff(diff_sen); //Send both sensor data to the app
-  //}
  
 } 
-void LOCK_UNLOCK(float a){
-      if (BLUE== 'Y')
-        {
-            delay(500);
-            hc05.println(a);
-        }
-}
+
 // Function to read sensor pins and get the pressure difference
 float get_diff (float press_diff) {
 
     float a = sen_1.read(); //get analog read from sensor 1
     float p_a = map(a,8388608, 16777215, 0, 40)*7.5;//map de sensor read to kPa
-    //Serial.print("Sensor 1: ");
-    //Serial.print(p_a,4);
-    //Serial.println("mmHg");
     delay(50); // delay between readings 
     
     float b = sen_2.read(); //get analog read from sensor 2
     float p_b = map(b,8388608, 16777215, 0, 40)*7.5;//map de sensor read to kPa
-    //Serial.print("Sensor 2: ");
-    //Serial.print(p_b, 4);
-    //Serial.println("mmHg");
     delay(50);  // delay between readings
    
     float diff = p_a - p_b - base; // Difference between sensor 1 and sensor 2
 
     // If the sensor diff is higher than the pressure we want, LED green is turn ON. Else it turns OFF.
-    if (diff >= press_diff){
-
-      digitalWrite(led_g, HIGH);
-      digitalWrite(led_r, LOW);
-      
-      }else{
-
-        digitalWrite(led_g, LOW);
-        digitalWrite(led_r, HIGH);
-        
-      }
     
     return diff;
 
