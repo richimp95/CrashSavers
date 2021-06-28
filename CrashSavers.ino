@@ -54,13 +54,14 @@ void setup() {
 }
 
 void loop() {
-  
+    
   if(bleKeyboard.isConnected()) {
    
    if(init_method == true){
       delay(5000); //Delay to stabilize preassure initial measure 
       base = 0;//init_measure();
       init_method = false;
+      bleKeyboard.write(KEY_RETURN);
    }
     
    if (bandera == false){
@@ -69,11 +70,13 @@ void loop() {
          
       digitalWrite(relay, LOW);
       bleKeyboard.print(" ");
+      bleKeyboard.print(diff_sen);
       bandera = true; // If the pressure hits more than 110 mmHg the motor will turn off 
       digitalWrite(led_g, HIGH);
       digitalWrite(led_y, LOW);
       }else{
-        bleKeyboard.write(KEY_RETURN);
+        //bleKeyboard.print(diff_sen);
+        Serial.println(diff_sen);
         digitalWrite(relay, HIGH);
         digitalWrite(led_g, LOW);
         digitalWrite(led_y, HIGH);
@@ -99,13 +102,10 @@ float get_diff (float press_diff, float base_press) {
         float temp_b = sen_2.read(); //get analog read from sensor 2
         float temp_p_b = map(temp_b,4000000, 16777215, 0, 40)*sensibilidad;
         delay(50); // delay between readings
-        
-        //avg_val += temp_p_a - temp_p_b; // add multiple ADC readings
         avg_val_a += temp_p_a;
         avg_val_b += temp_p_b;
      }
   
-    //avg_val /= avg_size;
     avg_val_a /= avg_size;
     avg_val_b /= avg_size;
 
@@ -140,4 +140,5 @@ float init_measure () {
     avg_val /= avg_size;
 
     return avg_val;
-}    
+    
+    }
