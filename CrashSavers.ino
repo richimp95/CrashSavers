@@ -61,22 +61,24 @@ void loop() {
       delay(5000); //Delay to stabilize preassure initial measure 
       base = 0;//init_measure();
       init_method = false;
-      bleKeyboard.write(KEY_RETURN);
+      
    }
-    
+   
+   bleKeyboard.write(KEY_LEFT_SHIFT);
+   
    if (bandera == false){
     diff_sen = get_diff(diff_val, base); // Get pressure difference
     if(diff_sen > diff_val){
          
       digitalWrite(relay, LOW);
-      bleKeyboard.print(" ");
+      bleKeyboard.write(KEY_LEFT_CTRL);
       bleKeyboard.print(diff_sen);
       bandera = true; // If the pressure hits more than 110 mmHg the motor will turn off 
       digitalWrite(led_g, HIGH);
       digitalWrite(led_y, LOW);
       }else{
         //bleKeyboard.print(diff_sen);
-        Serial.println(diff_sen);
+        //bleKeyboard.println(-diff_sen);
         digitalWrite(relay, HIGH);
         digitalWrite(led_g, LOW);
         digitalWrite(led_y, HIGH);
@@ -115,6 +117,7 @@ float get_diff (float press_diff, float base_press) {
     return diff;
 
   }
+  
 float init_measure () {
    
     float avg_val = 0.0; // variable for averaging
