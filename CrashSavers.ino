@@ -11,7 +11,7 @@
 // Libraries
 #include <BleKeyboard.h>
 #include <Q2HX711.h>
-BleKeyboard bleKeyboard("CrashSavers Simulator", "Desarrollos RM y Digital Strings");
+BleKeyboard bleKeyboard("CrashSavers Simulator", "Desarrollo de Proyectos Digital Strings S.A.");
 
 // Sensor pins to use
 const byte out_sen_1 = 25; //Sensor 1
